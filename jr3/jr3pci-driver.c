@@ -23,6 +23,29 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+ /***************************************************************************
+ *   Modifications have been made to this program that are not currently
+ *   on the git remote servers, and only exist locally. These changes
+ *   are as follows:               NOTE: UPDATE LINE NUMBERS!
+ *   
+ *   changelog:
+ *       Romeo Perlstein (7/22/2026) [romeperl@umd.edu]
+ *           - Modified lines 239, 242 to update the access_ok() kernal 
+ *             function from deprecated 3 inputs:
+ *                     access_ok(access type, address, size)
+ *             to up-to-date 2 inputs:
+ *                     access_ok(address, size)
+ *           - Modified lines 216, 222 to update the access_ok() kernal 
+ *             function input ARG by typecasting it to resolve build
+ *             warnings:
+ *                 from:
+ *                     access_ok(arg, size)
+ *                 to:
+ *                     access_ok((const void *)arg, size)
+ *           - Caught return value from pci_register_drivers() on line
+ *             579, and added a kernal print statement for debug 
+ ***************************************************************************/
+
 #define __MODULE__
 
 #include <linux/module.h>
@@ -213,10 +236,10 @@ long jr3_ioctl(struct file *filp, unsigned int request, unsigned long arg)
 
 #ifndef LINUX_20
 	if (_IOC_DIR(request) & _IOC_READ)
-		err = !access_ok(VERIFY_WRITE, arg, size);
+		err = !access_ok((const void *)arg, size);
 
 	if (_IOC_DIR(request) & _IOC_WRITE)
-		err = !access_ok(VERIFY_READ, arg, size);
+		err = !access_ok((const void *)arg, size);
 
 	if (err)
 		return -EFAULT;
@@ -553,7 +576,11 @@ static void jr3_pci_init(void)
 {
 	DBG_PRINT("jr3pci-driver: %s\n", __PRETTY_FUNCTION__);
 
-	pci_register_driver(&jr3_pci_driver);
+	if(pci_register_driver(&jr3_pci_driver) != 0)
+	{
+		printk("jr3pci-driver, FAILED to register! Not sure what I'm supposed to do bucko. Have you thought about just throwing in the towel?");
+		return;
+	}
 
 	printk("jr3pci-driver, registered, current number of devices: %d\n", pci_registered);
 }

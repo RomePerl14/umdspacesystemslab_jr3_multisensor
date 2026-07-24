@@ -1,3 +1,24 @@
+ /***************************************************************************
+ *   Modifications have been made to this program that are not currently
+ *   on the git remote servers, and only exist locally. These changes
+ *   are as follows:               NOTE: UPDATE LINE NUMBERS!
+ *   
+ *   changelog:
+ *       Romeo Perlstein (7/22/2026) [romeperl@umd.edu]
+ *           - Added prototypes for the following functions to reduce
+ *             build errors:
+ *               - read_data
+ *               - write_data
+ *               - write_program
+ *               - read_program
+ *               - jr3_reset
+ *               - jr3_zero_offs
+ *               - jr3_filter
+ *               - jr3_set_full_scales
+ * 
+ ***************************************************************************/
+
+
 #ifndef JR3PCI_DRIVER_HEADER
 
 #define JR3PCI_DRIVER_HEADER
@@ -71,5 +92,17 @@ struct jr3_board {
 void jr3_init(struct jr3_board *board);
 
 static void jr3_pci_remove(struct pci_dev *pdev);
+
+void __iomem *board2virtual(void __iomem *, int);
+short read_data(struct jr3_board *, int, int);
+void write_data(struct jr3_board *, int, int, int);
+void write_program(struct jr3_board *, int, short, short, int);
+int read_program(struct jr3_board *, int, int);
+int jr3_reset(struct jr3_board *, int);
+int jr3_zero_offs(struct jr3_board *, int);
+int jr3_filter(struct jr3_board *, unsigned long, int, int);
+int jr3_set_full_scales(struct jr3_board *, unsigned long, int);
+int jr3_get_full_scales(struct jr3_board *, unsigned long, int);
+
 
 #endif

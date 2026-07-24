@@ -27,3 +27,5 @@ modules.builtin
 *.patch
 *.gcno
 .settings/*
+*.cmd
+*.mod
